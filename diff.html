@@ -1,0 +1,473 @@
+  <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Busca - Nome e Matrícula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        
+        .auto-filled {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-color: #0ea5e9;
+        }
+        
+        .error-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .success-pulse {
+            animation: pulse 0.6s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="min-h-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div class="min-h-full flex items-center justify-center p-6">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+              <div class="w-28 h-28 bg-white rounded-full shadow-md mx-auto mb-4 flex items-center justify-center p-2">
+    <img 
+        src="https://raw.githubusercontent.com/hugocfmelo/Presen-a/25a5d69270cdb2a7996708ebb7d402fb15cdb674/Bras%C3%A3o%20TJGO.png"
+        alt="Brasão TJGO"
+        class="w-full h-full object-contain"
+    >
+</div>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Marque sua Presença</h1>
+                <p class="text-gray-600">Digite seu nome ou matrícula</p>
+            </div>
+
+            <form id="searchForm" class="space-y-6">
+                <div class="space-y-2">
+                    <label for="nome" class="block text-sm font-medium text-gray-700">Nome Completo</label>
+                    <input 
+                        type="text" 
+                        id="nome" 
+                        name="nome"
+                        class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none text-gray-800 placeholder-gray-400"
+                        placeholder="Digite seu nome completo..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="flex items-center justify-center">
+                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="matricula" class="block text-sm font-medium text-gray-700">Matrícula</label>
+                    <input 
+                        type="text" 
+                        id="matricula" 
+                        name="matricula"
+                        class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none text-gray-800 placeholder-gray-400"
+                        placeholder="Digite sua matrícula..."
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div id="message" class="hidden p-4 rounded-lg text-center font-medium"></div>
+
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-200 transition-all duration-200 transform hover:scale-105"
+                >
+                    Verificar Dados
+                </button>
+            </form>
+
+            <!-- Lista de Validações -->
+            <div id="validationsList" class="mt-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Registros Validados</h3>
+                    <div class="flex gap-2">
+                        <button 
+                            id="downloadBtn" 
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-1"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Excel
+                        </button>
+                        <button 
+                            id="clearBtn" 
+                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-200"
+                        >
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <div id="validationsTable" class="space-y-2">
+                        <!-- Registros aparecerão aqui -->
+                    </div>
+                </div>
+                
+                <div class="mt-2 text-sm text-gray-600 text-center">
+                    Total de validações: <span id="totalCount" class="font-semibold">0</span>
+                </div>
+            </div>
+
+            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Como usar:</h3>
+                <ul class="text-xs text-gray-600 space-y-1">
+                    <li>• Digite seu nome completo OU sua matrícula</li>
+                    <li>• O outro campo será preenchido automaticamente</li>
+                    <li>• Apenas dados válidos são aceitos</li>
+                    <li>• <strong>Download:</strong> Clique no botão verde "Excel" para baixar a planilha</li>
+                    <li>• O arquivo será salvo na pasta Downloads do seu computador</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      // Detecta se é admin pela URL
+const params = new URLSearchParams(window.location.search);
+const isAdmin = params.get("admin") === "1";
+        // Base de dados - SUBSTITUA pelos seus dados reais
+        const baseDados = [
+ ];
+
+        const nomeInput = document.getElementById('nome');
+        const matriculaInput = document.getElementById('matricula');
+        const messageDiv = document.getElementById('message');
+        const form = document.getElementById('searchForm');
+        const validationsList = document.getElementById('validationsList');
+        const validationsTable = document.getElementById('validationsTable');
+        const totalCount = document.getElementById('totalCount');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+if (!isAdmin) {
+    validationsList.classList.add("hidden");
+}
+      
+        let isAutoFilling = false;
+        let validatedRecords = [];
+
+      function enviarPresenca(nome, matricula) {
+  fetch("https://script.google.com/macros/s/AKfycbzV_ZVt7FUcunJQ83ZsmmtkIfs0nONNghCzDCSpIkeOt5NIFkxKAcTzooe6qU8UfWsd/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      nome: nome,
+      matricula: matricula,
+      origem: "participante"
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(() => {
+    showMessage("Presença registrada com sucesso!", "success");
+  })
+  .catch(() => {
+    showMessage("Erro ao registrar presença.", "error");
+  });
+}
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `p-4 rounded-lg text-center font-medium ${
+                type === 'success' ? 'bg-green-100 text-green-800' : 
+                type === 'error' ? 'bg-red-100 text-red-800' : 
+                'bg-blue-100 text-blue-800'
+            }`;
+            messageDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        function normalizeText(text) {
+            return text.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .trim();
+        }
+
+        function buscarPorNome(nome) {
+            const nomeNormalizado = normalizeText(nome);
+            return baseDados.find(item => 
+                normalizeText(item.nome) === nomeNormalizado
+            );
+        }
+
+        function buscarPorMatricula(matricula) {
+            return baseDados.find(item => 
+                item.matricula === matricula.trim()
+            );
+        }
+
+        function preencherAutomaticamente(campo, valor, tipoEncontrado) {
+            if (isAutoFilling) return;
+            
+            isAutoFilling = true;
+            campo.value = valor;
+            campo.classList.add('auto-filled', 'success-pulse');
+            
+            setTimeout(() => {
+                campo.classList.remove('success-pulse');
+                isAutoFilling = false;
+            }, 600);
+        }
+
+        function limparAutoPreenchimento(campo) {
+            if (isAutoFilling) return;
+            campo.classList.remove('auto-filled');
+        }
+
+        function mostrarErro(campo) {
+            campo.classList.add('error-shake');
+            setTimeout(() => {
+                campo.classList.remove('error-shake');
+            }, 500);
+        }
+
+        function adicionarValidacao(nome, matricula) {
+            const timestamp = new Date().toLocaleString('pt-BR');
+            const registro = { nome, matricula, timestamp };
+            
+            // Verificar se já existe
+            const jaExiste = validatedRecords.some(record => 
+                record.nome === nome && record.matricula === matricula
+            );
+            
+            if (!jaExiste) {
+                validatedRecords.push(registro);
+                atualizarListaValidacoes();
+            }
+        }
+      function atualizarListaValidacoes() {
+    if (validatedRecords.length === 0) {
+        validationsList.classList.add('hidden');
+        totalCount.textContent = 0;
+        validationsTable.innerHTML = '';
+        return;
+    }
+
+    validationsList.classList.remove('hidden');
+    totalCount.textContent = validatedRecords.length;
+
+    validationsTable.innerHTML = validatedRecords.map((record, index) => `
+        <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200">
+            <div class="flex-1">
+                <div class="font-medium text-gray-800">${record.nome}</div>
+                <div class="text-sm text-gray-600">Matrícula: ${record.matricula}</div>
+                <div class="text-xs text-gray-500">${record.timestamp}</div>
+            </div>
+
+            ${isAdmin ? `
+            <button 
+                onclick="removerValidacao(${index})"
+                class="text-red-500 hover:text-red-700 p-1"
+                title="Remover registro"
+            >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+        function removerValidacao(index) {
+            validatedRecords.splice(index, 1);
+            atualizarListaValidacoes();
+        }
+
+        function baixarPlanilha() {
+            if (validatedRecords.length === 0) {
+                showMessage('Nenhum registro para baixar.', 'error');
+                return;
+            }
+
+            // Criar conteúdo CSV
+            const headers = ['Nome', 'Matrícula', 'Data/Hora da Validação'];
+            const csvContent = [
+                headers.join(','),
+                ...validatedRecords.map(record => 
+                    `"${record.nome}","${record.matricula}","${record.timestamp}"`
+                )
+            ].join('\n');
+
+            // Criar e baixar arquivo
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `validacoes_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage(`Planilha baixada com ${validatedRecords.length} registros!`, 'success');
+        }
+
+        function limparRegistros() {
+            if (validatedRecords.length === 0) return;
+            
+            if (confirm('Tem certeza que deseja limpar todos os registros?')) {
+                validatedRecords = [];
+                atualizarListaValidacoes();
+                showMessage('Registros limpos com sucesso!', 'info');
+            }
+        }
+
+        nomeInput.addEventListener('input', function() {
+            if (isAutoFilling) return;
+            
+            const nome = this.value.trim();
+            limparAutoPreenchimento(matriculaInput);
+            
+            if (nome.length > 2) {
+                const resultado = buscarPorNome(nome);
+                if (resultado) {
+                    preencherAutomaticamente(matriculaInput, resultado.matricula, 'nome');
+                } else if (nome.length > 5) {
+                    matriculaInput.value = '';
+                }
+            } else {
+                matriculaInput.value = '';
+            }
+        });
+
+        matriculaInput.addEventListener('input', function() {
+            if (isAutoFilling) return;
+            
+            const matricula = this.value.trim();
+            limparAutoPreenchimento(nomeInput);
+            
+            if (matricula.length > 0) {
+                const resultado = buscarPorMatricula(matricula);
+                if (resultado) {
+                    preencherAutomaticamente(nomeInput, resultado.nome, 'matricula');
+                } else if (matricula.length > 3) {
+                    nomeInput.value = '';
+                }
+            } else {
+                nomeInput.value = '';
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nome = nomeInput.value.trim();
+const matricula = matriculaInput.value.trim();
+
+let nomeFinal = nome;
+let matriculaFinal = matricula;
+            
+            if (!nome && !matricula) {
+                showMessage('Por favor, preencha pelo menos um campo.', 'error');
+                return;
+            }
+            
+            let encontrado = false;
+            
+            if (nome && matricula) {
+                const resultadoNome = buscarPorNome(nome);
+                const resultadoMatricula = buscarPorMatricula(matricula);
+                
+                if (resultadoNome && resultadoMatricula && 
+                    resultadoNome.matricula === matricula && 
+                    normalizeText(resultadoMatricula.nome) === normalizeText(nome)) {
+                    encontrado = true;
+                    nomeFinal = nome;
+matriculaFinal = matricula;
+adicionarValidacao(nomeFinal, matriculaFinal);
+                    showMessage(`Dados confirmados e registrados! ${nome} - Matrícula: ${matricula}`, 'success');
+                } else {
+                    showMessage('Os dados não coincidem. Verifique as informações.', 'error');
+                    mostrarErro(nomeInput);
+                    mostrarErro(matriculaInput);
+                }
+            } else if (nome) {
+                const resultado = buscarPorNome(nome);
+                if (resultado) {
+                    encontrado = true;
+                    nomeFinal = resultado.nome;
+matriculaFinal = resultado.matricula;
+adicionarValidacao(nomeFinal, matriculaFinal);
+                    showMessage(`Dados encontrados e registrados! ${resultado.nome} - Matrícula: ${resultado.matricula}`, 'success');
+                } else {
+                    showMessage('Nome não encontrado na base de dados.', 'error');
+                    mostrarErro(nomeInput);
+                }
+            } else if (matricula) {
+                const resultado = buscarPorMatricula(matricula);
+                if (resultado) {
+                    encontrado = true;
+                    nomeFinal = resultado.nome;
+matriculaFinal = resultado.matricula;
+adicionarValidacao(nomeFinal, matriculaFinal);
+                    showMessage(`Dados encontrados e registrados! ${resultado.nome} - Matrícula: ${resultado.matricula}`, 'success');
+                } else {
+                    showMessage('Matrícula não encontrada na base de dados.', 'error');
+                    mostrarErro(matriculaInput);
+                }
+            }
+            
+            // Limpar campos após validação bem-sucedida  
+          if (encontrado) {
+    enviarPresenca(nomeFinal, matriculaFinal);
+
+    setTimeout(() => {
+        nomeInput.value = '';
+        matriculaInput.value = '';
+        nomeInput.classList.remove('auto-filled');
+        matriculaInput.classList.remove('auto-filled');
+    }, 1500);
+}
+        });
+
+        // Event listeners para os botões
+        if (isAdmin) {
+    downloadBtn.addEventListener('click', baixarPlanilha);
+    clearBtn.addEventListener('click', limparRegistros);
+}
+
+        // Limpar campos ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!form.contains(e.target)) {
+                nomeInput.classList.remove('auto-filled');
+                matriculaInput.classList.remove('auto-filled');
+            }
+        });
+      </script>
+</body>
+</html>
