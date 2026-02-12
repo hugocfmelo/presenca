@@ -173,8 +173,6 @@ const isAdmin = params.get("admin") === "1";
 
 if (!isAdmin) {
     validationsList.classList.add("hidden");
-    downloadBtn.classList.add("hidden");
-    clearBtn.classList.add("hidden");
 }
       
         let isAutoFilling = false;
@@ -274,6 +272,9 @@ if (!isAdmin) {
             }
         }
       function atualizarListaValidacoes() {
+    // PARTICIPANTE NÃO VÊ LISTA EM HIPÓTESE ALGUMA
+    if (!isAdmin) return;
+
     if (validatedRecords.length === 0) {
         validationsList.classList.add('hidden');
         totalCount.textContent = 0;
@@ -292,7 +293,6 @@ if (!isAdmin) {
                 <div class="text-xs text-gray-500">${record.timestamp}</div>
             </div>
 
-            ${isAdmin ? `
             <button 
                 onclick="removerValidacao(${index})"
                 class="text-red-500 hover:text-red-700 p-1"
@@ -303,7 +303,6 @@ if (!isAdmin) {
                           d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
-            ` : ''}
         </div>
     `).join('');
 }
@@ -476,6 +475,7 @@ adicionarValidacao(nomeFinal, matriculaFinal);
       </script>
 </body>
 </html>
+
 
 
 
