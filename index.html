@@ -438,45 +438,6 @@ if (!isAdmin) {
         matriculaInput.classList.remove('auto-filled');
     }, 1200);
 });
-            } else if (nome) {
-                const resultado = buscarPorNome(nome);
-                if (resultado) {
-                    encontrado = true;
-                    nomeFinal = resultado.nome;
-matriculaFinal = resultado.matricula;
-adicionarValidacao(nomeFinal, matriculaFinal);
-                    showMessage(`Dados encontrados e registrados! ${resultado.nome} - Matrícula: ${resultado.matricula}`, 'success');
-                } else {
-                    showMessage('Nome não encontrado na base de dados.', 'error');
-                    mostrarErro(nomeInput);
-                }
-            } else if (matricula) {
-                const resultado = buscarPorMatricula(matricula);
-                if (resultado) {
-                    encontrado = true;
-                    nomeFinal = resultado.nome;
-matriculaFinal = resultado.matricula;
-adicionarValidacao(nomeFinal, matriculaFinal);
-                    showMessage(`Dados encontrados e registrados! ${resultado.nome} - Matrícula: ${resultado.matricula}`, 'success');
-                } else {
-                    showMessage('Matrícula não encontrada na base de dados.', 'error');
-                    mostrarErro(matriculaInput);
-                }
-            }
-            
-            // Limpar campos após validação bem-sucedida  
-          if (encontrado) {
-    enviarPresenca(nomeFinal, matriculaFinal);
-
-    setTimeout(() => {
-        nomeInput.value = '';
-        matriculaInput.value = '';
-        nomeInput.classList.remove('auto-filled');
-        matriculaInput.classList.remove('auto-filled');
-    }, 1500);
-}
-        });
-
         // Event listeners para os botões
         if (isAdmin) {
     downloadBtn.addEventListener('click', baixarPlanilha);
@@ -493,6 +454,7 @@ adicionarValidacao(nomeFinal, matriculaFinal);
       </script>
 </body>
 </html>
+
 
 
 
