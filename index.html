@@ -173,6 +173,8 @@ const isAdmin = params.get("admin") === "1";
 
 if (!isAdmin) {
     validationsList.classList.add("hidden");
+    downloadBtn.classList.add("hidden");
+    clearBtn.classList.add("hidden");
 }
       
         let isAutoFilling = false;
@@ -474,5 +476,6 @@ adicionarValidacao(nomeFinal, matriculaFinal);
       </script>
 </body>
 </html>
+
 
 
