@@ -220,11 +220,12 @@ if (!isAdmin) {
         }
 
         function buscarPorNome(nome) {
-            const nomeNormalizado = normalizeText(nome);
-            return baseDados.find(item => 
-                normalizeText(item.nome) === nomeNormalizado
-            );
-        }
+    const nomeNormalizado = normalizeText(nome);
+
+    return baseDados.find(item =>
+        normalizeText(item.nome).includes(nomeNormalizado)
+    );
+}
 
         function buscarPorMatricula(matricula) {
             return baseDados.find(item => 
@@ -454,6 +455,7 @@ if (!isAdmin) {
       </script>
 </body>
 </html>
+
 
 
 
