@@ -396,30 +396,33 @@ const matricula = matriculaInput.value.trim();
 let nomeFinal = nome;
 let matriculaFinal = matricula;
             
-            if (!nome && !matricula) {
-                showMessage('Por favor, preencha pelo menos um campo.', 'error');
-                return;
-            }
-            
-            let encontrado = false;
-            
-            if (nome && matricula) {
-                const resultadoNome = buscarPorNome(nome);
-                const resultadoMatricula = buscarPorMatricula(matricula);
-                
-                if (resultadoNome && resultadoMatricula && 
-                    resultadoNome.matricula === matricula && 
-                    normalizeText(resultadoMatricula.nome) === normalizeText(nome)) {
-                    encontrado = true;
-                    nomeFinal = nome;
-matriculaFinal = matricula;
+            let resultado = null;
+
+if (nome) {
+  resultado = buscarPorNome(nome);
+}
+
+if (!resultado && matricula) {
+  resultado = buscarPorMatricula(matricula);
+}
+
+if (!resultado) {
+  showMessage('Dados não encontrados na base.', 'error');
+  mostrarErro(nomeInput);
+  mostrarErro(matriculaInput);
+  return;
+}
+
+// DADOS OFICIAIS DA BASE
+nomeFinal = resultado.nome;
+matriculaFinal = resultado.matricula;
+encontrado = true;
+
 adicionarValidacao(nomeFinal, matriculaFinal);
-                    showMessage(`Dados confirmados e registrados! ${nome} - Matrícula: ${matricula}`, 'success');
-                } else {
-                    showMessage('Os dados não coincidem. Verifique as informações.', 'error');
-                    mostrarErro(nomeInput);
-                    mostrarErro(matriculaInput);
-                }
+showMessage(
+  `Presença registrada! ${nomeFinal} - Matrícula: ${matriculaFinal}`,
+  'success'
+);
             } else if (nome) {
                 const resultado = buscarPorNome(nome);
                 if (resultado) {
@@ -475,6 +478,7 @@ adicionarValidacao(nomeFinal, matriculaFinal);
       </script>
 </body>
 </html>
+
 
 
 
