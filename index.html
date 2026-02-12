@@ -387,42 +387,57 @@ if (!isAdmin) {
             }
         });
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nome = nomeInput.value.trim();
-const matricula = matriculaInput.value.trim();
+        form.addEventListener('submit', function (e) {
+    e.preventDefault();
 
-let nomeFinal = nome;
-let matriculaFinal = matricula;
-            
-            let resultado = null;
+    let encontrado = false;
 
-if (nome) {
-  resultado = buscarPorNome(nome);
-}
+    const nome = nomeInput.value.trim();
+    const matricula = matriculaInput.value.trim();
 
-if (!resultado && matricula) {
-  resultado = buscarPorMatricula(matricula);
-}
+    let nomeFinal = '';
+    let matriculaFinal = '';
 
-if (!resultado) {
-  showMessage('Dados não encontrados na base.', 'error');
-  mostrarErro(nomeInput);
-  mostrarErro(matriculaInput);
-  return;
-}
+    let resultado = null;
 
-// DADOS OFICIAIS DA BASE
-nomeFinal = resultado.nome;
-matriculaFinal = resultado.matricula;
-encontrado = true;
+    if (nome) {
+        resultado = buscarPorNome(nome);
+    }
 
-adicionarValidacao(nomeFinal, matriculaFinal);
-showMessage(
-  `Presença registrada! ${nomeFinal} - Matrícula: ${matriculaFinal}`,
-  'success'
-);
+    if (!resultado && matricula) {
+        resultado = buscarPorMatricula(matricula);
+    }
+
+    if (!resultado) {
+        showMessage('Dados não encontrados na base.', 'error');
+        mostrarErro(nomeInput);
+        mostrarErro(matriculaInput);
+        return;
+    }
+
+    // dados oficiais da base
+    nomeFinal = resultado.nome;
+    matriculaFinal = resultado.matricula;
+    encontrado = true;
+
+    adicionarValidacao(nomeFinal, matriculaFinal);
+
+    showMessage(
+        `Presença registrada! ${nomeFinal} - Matrícula: ${matriculaFinal}`,
+        'success'
+    );
+
+    // ENVIA PARA O GOOGLE APPS SCRIPT
+    enviarPresenca(nomeFinal, matriculaFinal);
+
+    // limpa os campos
+    setTimeout(() => {
+        nomeInput.value = '';
+        matriculaInput.value = '';
+        nomeInput.classList.remove('auto-filled');
+        matriculaInput.classList.remove('auto-filled');
+    }, 1200);
+});
             } else if (nome) {
                 const resultado = buscarPorNome(nome);
                 if (resultado) {
@@ -478,6 +493,7 @@ adicionarValidacao(nomeFinal, matriculaFinal);
       </script>
 </body>
 </html>
+
 
 
 
