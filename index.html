@@ -228,13 +228,14 @@ if (!isAdmin) {
 }
 
        function buscarPorMatricula(matricula) {
-    const matriculaLimpa = matricula.trim();
+    const matriculaNormalizada = matricula
+        .replace(/\D/g, '') // remove tudo que não for número
+        .trim();
 
     return baseDados.find(item =>
-        item.matricula === matriculaLimpa
+        item.matricula === matriculaNormalizada
     );
 }
-
         function preencherAutomaticamente(campo, valor, tipoEncontrado) {
             if (isAutoFilling) return;
             
@@ -457,6 +458,7 @@ if (!isAdmin) {
       </script>
 </body>
 </html>
+
 
 
 
