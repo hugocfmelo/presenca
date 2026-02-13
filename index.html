@@ -179,17 +179,16 @@ if (!isAdmin) {
         let validatedRecords = [];
 
       function enviarPresenca(nome, matricula) {
+  const formData = new FormData();
+  formData.append("nome", nome);
+  formData.append("matricula", matricula);
+  formData.append("origem", "participante");
+
   fetch("https://script.google.com/macros/s/AKfycbzV_ZVt7FUcunJQ83ZsmmtkIfs0nONNghCzDCSpIkeOt5NIFkxKAcTzooe6qU8UfWsd/exec", {
     method: "POST",
-    body: JSON.stringify({
-      nome: nome,
-      matricula: matricula,
-      origem: "participante"
-    }),
-    headers: {
-      "Content-Type": "application/json"
-    }
+    body: formData
   })
+  .then(response => response.text())
   .then(() => {
     showMessage("Presença registrada com sucesso!", "success");
   })
@@ -197,6 +196,7 @@ if (!isAdmin) {
     showMessage("Erro ao registrar presença.", "error");
   });
 }
+
 
         function showMessage(text, type) {
             messageDiv.textContent = text;
@@ -458,6 +458,7 @@ if (!isAdmin) {
       </script>
 </body>
 </html>
+
 
 
 
