@@ -227,11 +227,11 @@ if (!isAdmin) {
     );
 }
 
-       function buscarPorNome(nome) {
-    const nomeNormalizado = normalizeText(nome);
+       function buscarPorMatricula(matricula) {
+    const matriculaLimpa = matricula.trim();
 
     return baseDados.find(item =>
-        normalizeText(item.nome).includes(nomeNormalizado)
+        item.matricula === matriculaLimpa
     );
 }
 
@@ -457,6 +457,7 @@ if (!isAdmin) {
       </script>
 </body>
 </html>
+
 
 
 
